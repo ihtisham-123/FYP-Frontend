@@ -2,37 +2,74 @@ import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-nativ
 import React, { useState } from 'react'
 import { Ionicons, FontAwesome, AntDesign } from '@expo/vector-icons'
 import { useRouterFunction } from '@/hooks/userouter'
-const LoginScreen = ({ navigation }: any) => {
+import { API_BASE_URL } from '@/utils/api'
 
+type LoginResponse = {
+    message?: string;
+    token?: string;
+};
 
+const LoginScreen = () => {
     const routerFunction = useRouterFunction();
 
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [message, setMessage] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const validateForm = (): boolean => {
+        if (!email || !password) {
+            setMessage('Please enter email and password');
+            return false;
+        }
+        return true;
+    };
 
-   
+    const handleLogin = async () => {
+        if (!validateForm()) return;
+
+        setIsLoading(true);
+        setMessage('');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data: LoginResponse = await response.json();
+
+            if (response.ok) {
+                setMessage('Login successful!');
+                // Save token if needed: await AsyncStorage.setItem('token', data.token!)
+                setTimeout(() => routerFunction('/home'), 1000);
+            } else {
+                setMessage(data.message || 'Login failed. Please try again.');
+            }
+        } catch (error) {
+            setMessage('Network error. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <View style={styles.container}>
-            {/* Back Button */}
             <Pressable onPress={() => routerFunction('/')} style={styles.backButton}>
                 <Ionicons name="arrow-back" size={20} color="black" />
             </Pressable>
 
-            {/* Logo */}
             <Image
                 style={styles.logo}
-                source={{ uri: "https://via.placeholder.com/150" }} // Replace with your actual logo
+                source={{ uri: "https://via.placeholder.com/150" }}
             />
 
-            {/* Welcome Text */}
             <Text style={styles.welcomeTitle}>Welcome Back!</Text>
             <Text style={styles.welcomeSubtitle}>
                 Log in to unlock personalized AI insights and take your social media to the next level.
             </Text>
 
-            {/* Tab Navigation */}
             <View style={styles.tabContainer}>
                 <Pressable style={styles.activeTab}>
                     <Text style={styles.activeTabText}>Login</Text>
@@ -42,7 +79,12 @@ const LoginScreen = ({ navigation }: any) => {
                 </Pressable>
             </View>
 
-            {/* Social Login Buttons */}
+            {message ? (
+                <Text style={[styles.message, { color: message.includes('successful') ? '#28a745' : '#dc3545' }]}>
+                    {message}
+                </Text>
+            ) : null}
+
             <Pressable style={styles.socialButton}>
                 <FontAwesome name="apple" size={20} color="black" />
                 <Text style={styles.socialButtonText}>Login with Apple</Text>
@@ -53,12 +95,14 @@ const LoginScreen = ({ navigation }: any) => {
                 <Text style={styles.socialButtonText}>Login with Google</Text>
             </Pressable>
 
-            {/* Input Fields */}
             <TextInput
                 placeholder='Enter Your Email'
                 style={styles.input}
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(value) => {
+                    setEmail(value)
+                    if (message) setMessage('')
+                }}
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
@@ -67,21 +111,27 @@ const LoginScreen = ({ navigation }: any) => {
                 placeholder='Enter Your Password'
                 style={styles.input}
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={(value) => {
+                    setPassword(value)
+                    if (message) setMessage('')
+                }}
                 secureTextEntry
             />
 
-            {/* Forgot Password */}
             <Pressable style={styles.forgotPasswordContainer} onPress={() => routerFunction('/forget')}>
                 <Text style={styles.forgotPasswordText}>Forget Password?</Text>
             </Pressable>
 
-            {/* Login Button */}
-            <Pressable style={styles.loginButton} onPress={() => routerFunction('/Login')}>
-                <Text style={styles.loginButtonText}>Login</Text>
+            <Pressable
+                style={[styles.loginButton, isLoading && styles.disabledButton]}
+                onPress={handleLogin}
+                disabled={isLoading}
+            >
+                <Text style={styles.loginButtonText}>
+                    {isLoading ? 'Logging in...' : 'Login'}
+                </Text>
             </Pressable>
 
-            {/* Terms and Conditions */}
             <Text style={styles.termsText}>
                 By signing up, you agree to our{' '}
                 <Text style={styles.linkText}>Term & Condition</Text> and{' '}
@@ -92,6 +142,7 @@ const LoginScreen = ({ navigation }: any) => {
 }
 
 export default LoginScreen
+
 
 const styles = StyleSheet.create({
     container: {
@@ -232,4 +283,14 @@ const styles = StyleSheet.create({
         color: '#0070C0',
         textDecorationLine: 'underline',
     },
+    message: {
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 15,
+        paddingHorizontal: 10,
+    },
+    disabledButton: {
+        opacity: 0.7,
+    },
+
 })
