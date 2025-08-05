@@ -28,7 +28,7 @@ const index = () => {
           <Pressable onPress={() => routerFunction('/notification')} style={styles.notfication_btn}>
             <Ionicons name="notifications" size={20} color="white" />
           </Pressable>
-          <Pressable onPress={() => routerFunction('/')} style={styles.setting_btn}>
+          <Pressable onPress={() => routerFunction('/settings')} style={styles.setting_btn}>
             <Ionicons name="settings" size={20} color="white" />
           </Pressable>
         </View>
@@ -36,11 +36,11 @@ const index = () => {
 
       {/* Main Actions: Create and Trending buttons */}
       <View style={styles.container4}>
-        <Pressable onPress={() => routerFunction('/')} style={styles.container5}>
+        <Pressable onPress={() => routerFunction('/create-new-post')} style={styles.container5}>
           <Ionicons name="add" size={20} color="white" />
           <Text style={{ color: "white", fontSize: 15 }}>Create New Post</Text>
         </Pressable>
-        <Pressable onPress={() => routerFunction('/')} style={styles.container6}>
+        <Pressable onPress={() => routerFunction('/trending-topics')} style={styles.container6}>
           <Ionicons name="trending-up-sharp" size={20} color="white" />
           <Text style={{ color: "white", fontSize: 15 }}>Trending Topics</Text>
         </Pressable>
@@ -86,7 +86,7 @@ const index = () => {
 
       {/* Bottom Buttons: Manage & Schedule */}
       <View style={styles.container9}>
-        <Pressable style={styles.loginButton}>
+        <Pressable style={styles.loginButton} onPress={() => routerFunction('/accountManag')}>
           <Text style={styles.loginButtonText}>Manage Account</Text>
         </Pressable>
         <Pressable style={styles.loginButton}>
