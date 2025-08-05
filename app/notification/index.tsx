@@ -34,8 +34,8 @@ const index = () => {
           style={styles.profileImage}
         />
         <View style={styles.icons}>
-          <Ionicons name="notifications-circle" size={32} color="#0077CC" />
-          <Ionicons name="settings" size={32} color="#0077CC" />
+          <Pressable onPress={()=>routerFunction('/notification')}><Ionicons name="notifications-circle" size={32} color="#0077CC" /></Pressable>
+          <Pressable onPress={()=>routerFunction('/settings')}><Ionicons name="settings" size={32} color="#0077CC" /></Pressable>
         </View>
       </View>
 
