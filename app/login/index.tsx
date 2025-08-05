@@ -85,7 +85,7 @@ const LoginScreen = () => {
                 </Text>
             ) : null}
 
-            <Pressable style={styles.socialButton}>
+            <Pressable style={styles.socialButton} onPress={() => routerFunction('/EditCaption')}>
                 <FontAwesome name="apple" size={20} color="black" />
                 <Text style={styles.socialButtonText}>Login with Apple</Text>
             </Pressable>
